@@ -5,15 +5,14 @@ public class NotesService(ApplicationDbContext context)
 {
     public async Task<List<TaskRecord>> GetPage(Pagination pagination)
     {
-        var query = context.Tasks.Skip(0);
+        IQueryable<TaskRecord> query = context.Tasks;
+
         if (pagination.Filter is not null)
         {
-            var predicate = PredicateBuilder.New<TaskRecord>();
-            PredicateSpinner<TaskRecord>.Unwrap(ref predicate, pagination.Filter);
+
+            var predicate = PredicateSpinner<TaskRecord>.Unwrap(pagination.Filter);
             query = query.Where(predicate);
         }
-
-        query = query.Skip(pagination.Start).Take(pagination.Limit);
 
         if (pagination.Sort is not null)
         {
@@ -25,6 +24,8 @@ public class NotesService(ApplicationDbContext context)
                 "ID" or _ => query.OrderBy(t => t.ID)
             };
         }
+
+        query = query.Skip(pagination.Start).Take(pagination.Limit);
 
         return await query.ToListAsync();
     }

@@ -1,16 +1,18 @@
-public class Endpoints(NotesService service)
+using Microsoft.AspNetCore.Mvc;
+
+public static class Endpoints
 {
-    public void MapEndpoints(IEndpointRouteBuilder routes)
+    public static void MapEndpoints(IEndpointRouteBuilder routes)
     {
         var tasksGroup = routes.MapGroup("/tasks");
 
-        tasksGroup.MapGet("/{id}", GetById);
-        tasksGroup.MapPost("/", GetPage);
-        tasksGroup.MapPost("/add", Add);
-        tasksGroup.MapPost("/delete/{id}", Delete);
+        tasksGroup.MapGet("/{id:guid}", GetById);
+        tasksGroup.MapPost("/page", GetPage);
+        tasksGroup.MapPost("/", Add);
+        tasksGroup.MapDelete("/{id:guid}", Delete);
     }
 
-    private async Task<IResult> GetPage(Pagination pagination)
+    private static async Task<IResult> GetPage([FromServices] NotesService service, [FromBody] Pagination pagination)
     {
         List<TaskRecord> page;
         try
@@ -25,7 +27,7 @@ public class Endpoints(NotesService service)
         return Results.Ok(page);
     }
 
-    private async Task<IResult> GetById(string id)
+    private static async Task<IResult> GetById([FromServices] NotesService service, [FromRoute] string id)
     {
         TaskRecord? result;
         try
@@ -44,7 +46,7 @@ public class Endpoints(NotesService service)
         return Results.Ok(result);
     }
 
-    private async Task<IResult> Add(TaskRecord task)
+    private static async Task<IResult> Add([FromServices] NotesService service, [FromBody] TaskRecord task)
     {
         try
         {
@@ -58,7 +60,7 @@ public class Endpoints(NotesService service)
         return Results.Ok();
     }
 
-    private async Task<IResult> Delete(string id)
+    private static async Task<IResult> Delete([FromServices] NotesService service, [FromRoute] string id)
     {
         try
         {

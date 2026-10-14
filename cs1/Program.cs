@@ -9,11 +9,9 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseSqlSer
 
 // API
 builder.Services.AddOpenApi();
+builder.Services.AddScoped<NotesService>();
 
 var app = builder.Build();
 
 app.UseHttpsRedirection();
-
-builder.Services.AddScoped<NotesService>();
-builder.Services.AddScoped<Endpoints>();
-app.Services.GetRequiredService<Endpoints>().MapEndpoints(app);
+Endpoints.MapEndpoints(app);

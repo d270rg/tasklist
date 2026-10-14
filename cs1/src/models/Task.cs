@@ -1,26 +1,10 @@
 public class TaskRecord
 {
-    public string ID { get; }
+    public string ID { get; init; } = Guid.NewGuid().ToString();
 
-    public string Title = "";
+    public string Title { get; init; } = "";
 
-    public DateTime Deadline;
+    public DateTime Deadline { get; init; }
 
-    public int Priority;
-
-    public TaskRecord()
-    {
-        ID = Guid.NewGuid().ToString();
-    }
-
-    public TaskRecord(TaskRecord task)
-    {
-        ID = task.ID;
-
-        Title = task.Title;
-
-        Deadline = task.Deadline;
-
-        Priority = task.Priority;
-    }
+    public int Priority { get; init; }
 }

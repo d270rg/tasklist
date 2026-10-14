@@ -1,4 +1,5 @@
 using System.Linq.Expressions;
+using System.Runtime.InteropServices;
 using LinqKit;
 
 public record SortOptions
@@ -42,15 +43,18 @@ public record FilterGroup
 
 static class PredicateSpinner<Entity> where Entity : class
 {
-    public static void Unwrap(ref ExpressionStarter<Entity> predicate, FilterGroup filterGroup)
+    public static ExpressionStarter<Entity> Unwrap(FilterGroup filterGroup, [Optional] ExpressionStarter<Entity> predicate)
     {
+        var newPredicate = predicate ?? PredicateBuilder.New<Entity>();
         foreach (var term in filterGroup.Terms)
         {
-            UnwrapTerm(term, ref predicate);
+            newPredicate = UnwrapTerm(term, predicate ?? PredicateBuilder.New<Entity>());
         }
+
+        return newPredicate;
     }
 
-    private static void UnwrapTerm(KeyValuePair<string, FilterNode> term, ref ExpressionStarter<Entity> predicate)
+    private static ExpressionStarter<Entity> UnwrapTerm(KeyValuePair<string, FilterNode> term, ExpressionStarter<Entity> predicate)
     {
         if (term.Value.Group is not null && term.Value.Options is not null)
         {
@@ -59,12 +63,12 @@ static class PredicateSpinner<Entity> where Entity : class
 
         if (term.Value.Group is not null)
         {
-            Unwrap(ref predicate, term.Value.Group);
+            return Unwrap(term.Value.Group, predicate);
         }
         else
             if (term.Value.Options is not null)
             {
-                ProccessOptionsLeaf(term, ref predicate);
+                return ProccessOptionsLeaf(term, predicate);
             }
             else
             {
@@ -72,7 +76,7 @@ static class PredicateSpinner<Entity> where Entity : class
             }
     }
 
-    private static void ProccessOptionsLeaf(KeyValuePair<string, FilterNode> term, ref ExpressionStarter<Entity> predicate)
+    private static ExpressionStarter<Entity> ProccessOptionsLeaf(KeyValuePair<string, FilterNode> term, ExpressionStarter<Entity> predicate)
     {
         var field = typeof(Entity).GetProperty(term.Value.Options!.Field)
                    ?? throw new ArgumentException($"Property '{term.Value.Options.Field}' not found.");
@@ -119,7 +123,7 @@ static class PredicateSpinner<Entity> where Entity : class
 
 
 
-        predicate = term.Key.ToLower() switch
+        var newPredicate = term.Key.ToLower() switch
         {
             "and" => (ExpressionStarter<Entity>)(term.Value.Options.Op.ToLower() switch
             {
@@ -141,5 +145,7 @@ static class PredicateSpinner<Entity> where Entity : class
             }),
             _ => throw new InvalidCastException("Invalid operator key, operator key should be `AND` or `OR` in any case"),
         };
+
+        return newPredicate;
     }
 }
