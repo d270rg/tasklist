@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi;
 
@@ -41,14 +42,14 @@ public static class Endpoints
                                                         Value = "MyTitle1"
                                                     }
                                                 },
-                                                // new {
-                                                //     Options = new
-                                                //     {
-                                                //         Field = "Deadline",
-                                                //         Op = "lte",
-                                                //         Value = new DateTime(year:2003, month:01, day:28)
-                                                //     }
-                                                // },
+                                                new {
+                                                    Options = new
+                                                    {
+                                                        Field = "Deadline",
+                                                        Op = "lte",
+                                                        Value = new DateTime(year:2003, month:01, day:28)
+                                                    }
+                                                },
                                              }
                                         }
                                     },
@@ -80,7 +81,7 @@ public static class Endpoints
         tasksGroup.MapDelete("/{id:guid}", Delete);
     }
 
-    private static async Task<IResult> GetPage([FromServices] NotesService service, [FromBody] Pagination pagination)
+    private static async Task<Results<Ok<List<TaskRecord>>, BadRequest<string>, ProblemHttpResult>> GetPage([FromServices] NotesService service, [FromBody] Pagination pagination)
     {
         List<TaskRecord> page;
         try
@@ -89,17 +90,17 @@ public static class Endpoints
         }
         catch (Exception e) when (e is InvalidOperationException or ArgumentException or InvalidCastException)
         {
-            return Results.BadRequest(e.Message);
+            return TypedResults.BadRequest(e.Message);
         }
         catch (Exception e)
         {
-            return Results.Problem(e.ToString());
+            return TypedResults.Problem(e.ToString());
         }
 
-        return Results.Ok(page);
+        return TypedResults.Ok(page);
     }
 
-    private static async Task<IResult> GetById([FromServices] NotesService service, [FromRoute] Guid id)
+    private static async Task<Results<Ok<TaskRecord>, NotFound, ProblemHttpResult>> GetById([FromServices] NotesService service, [FromRoute] Guid id)
     {
         TaskRecord? result;
         try
@@ -107,18 +108,18 @@ public static class Endpoints
             result = await service.GetById(id);
             if (result is null)
             {
-                return Results.NotFound();
+                return TypedResults.NotFound();
             }
         }
         catch (Exception e)
         {
-            return Results.Problem(e.ToString());
+            return TypedResults.Problem(e.ToString());
         }
 
-        return Results.Ok(result);
+        return TypedResults.Ok(result);
     }
 
-    private static async Task<IResult> Add([FromServices] NotesService service, [FromBody] APITaskRecord task)
+    private static async Task<Results<Ok<Guid>, ProblemHttpResult>> Add([FromServices] NotesService service, [FromBody] APITaskRecord task)
     {
         TaskRecord entity = task.ToDomain();
 
@@ -129,23 +130,27 @@ public static class Endpoints
         }
         catch (Exception e)
         {
-            return Results.Problem(e.ToString());
+            return TypedResults.Problem(e.ToString());
         }
 
-        return Results.Ok(newID);
+        return TypedResults.Ok(newID);
     }
 
-    private static async Task<IResult> Delete([FromServices] NotesService service, [FromRoute] Guid id)
+    private static async Task<Results<Ok, NotFound, ProblemHttpResult>> Delete([FromServices] NotesService service, [FromRoute] Guid id)
     {
         try
         {
-            await service.Delete(id);
+            var deleted = await service.Delete(id);
+            if (!deleted)
+            {
+                return TypedResults.NotFound();
+            }
         }
         catch (Exception e)
         {
-            return Results.Problem(e.ToString());
+            return TypedResults.Problem(e.ToString());
         }
 
-        return Results.Ok();
+        return TypedResults.Ok();
     }
 }

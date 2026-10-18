@@ -45,9 +45,10 @@ public class NotesService(ApplicationDbContext context)
         return (Guid)created.Entity.ID!;
     }
 
-    public async Task Delete(Guid id)
+    public async Task<bool> Delete(Guid id)
     {
-        await context.Tasks.Where(task => task.ID == id).ExecuteDeleteAsync();
+        var deleted = await context.Tasks.Where(task => task.ID == id).ExecuteDeleteAsync();
         await context.SaveChangesAsync();
+        return deleted > 0;
     }
 }
