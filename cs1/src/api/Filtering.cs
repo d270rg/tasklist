@@ -1,74 +1,80 @@
 using System.Linq.Expressions;
+using System.Reflection;
 using System.Runtime.InteropServices;
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using LinqKit;
 
-public record SortOptions
+
+
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum Junction
 {
-    public required string Field;
-    public required string Direction;
+    Null,
+    And,
+    Or
 }
 
-public record FilterOptions
+public record SortOptions(string Field, int Direction);
+
+public record FilterOptions(string Field, string Op, JsonElement Value);
+
+public record Pagination(FilterGroup? Filter, SortOptions? Sort, int Start = 0, int Limit = -1);
+
+public record FilterNode(FilterGroup? Group, FilterOptions? Options);
+
+/**
 {
-    public required string Field;
-
-    public required string Op;
-
-    public required object Value;
+    filter: {
+        terms: [
+           {
+              junction: "and",
+              terms: [
+                {
+                    field: "Title",
+                    op: "eq",
+                    value: "123"
+                },
+                {
+                    juntion: "or",
+                    terms: []
+                }
+              ]
+           }
+        ]
+    }
 }
+*/
+public record FilterGroup(Junction Junction, FilterNode[]? Terms);
 
-public record Pagination
-{
-    public readonly FilterGroup? Filter;
-
-    public readonly SortOptions? Sort;
-
-    public readonly int Start = 0;
-
-    public readonly int Limit = -1;
-
-    public readonly int Size = -1;
-}
-
-public record FilterNode
-{
-    public readonly FilterGroup? Group;
-    public readonly FilterOptions? Options;
-}
-
-public record FilterGroup
-{
-    public readonly Dictionary<string, FilterNode> Terms = [];
-}
-
-static class PredicateSpinner<Entity> where Entity : class
+static partial class PredicateSpinner<Entity> where Entity : class
 {
     public static ExpressionStarter<Entity> Unwrap(FilterGroup filterGroup, [Optional] ExpressionStarter<Entity> predicate)
     {
         var newPredicate = predicate ?? PredicateBuilder.New<Entity>();
-        foreach (var term in filterGroup.Terms)
+        foreach (var term in filterGroup.Terms ?? [])
         {
-            newPredicate = UnwrapTerm(term, predicate ?? PredicateBuilder.New<Entity>());
+            newPredicate = UnwrapTerm(filterGroup.Junction, term, predicate ?? PredicateBuilder.New<Entity>());
         }
 
         return newPredicate;
     }
 
-    private static ExpressionStarter<Entity> UnwrapTerm(KeyValuePair<string, FilterNode> term, ExpressionStarter<Entity> predicate)
+    private static ExpressionStarter<Entity> UnwrapTerm(Junction junction, FilterNode term, ExpressionStarter<Entity> predicate)
     {
-        if (term.Value.Group is not null && term.Value.Options is not null)
+        if (term.Group is not null && term.Options is not null)
         {
             throw new InvalidCastException("Operator value should be either FilterGroup or FilterOptions, it can't be both");
         }
 
-        if (term.Value.Group is not null)
+        if (term.Group is not null)
         {
-            return Unwrap(term.Value.Group, predicate);
+            return Unwrap(term.Group, predicate);
         }
         else
-            if (term.Value.Options is not null)
+            if (term.Options is not null)
             {
-                return ProccessOptionsLeaf(term, predicate);
+                return ProccessOptionsLeaf(junction, term, predicate);
             }
             else
             {
@@ -76,74 +82,70 @@ static class PredicateSpinner<Entity> where Entity : class
             }
     }
 
-    private static ExpressionStarter<Entity> ProccessOptionsLeaf(KeyValuePair<string, FilterNode> term, ExpressionStarter<Entity> predicate)
+    private static ExpressionStarter<Entity> ProccessOptionsLeaf(Junction junction, FilterNode term, ExpressionStarter<Entity> predicate)
     {
-        var field = typeof(Entity).GetProperty(term.Value.Options!.Field)
-                   ?? throw new ArgumentException($"Property '{term.Value.Options.Field}' not found.");
+        var field = typeof(Entity).GetProperty(term.Options!.Field,
+                    BindingFlags.IgnoreCase
+                    | BindingFlags.Public
+                    | BindingFlags.Instance)
+                   ?? throw new ArgumentException($"Property '{term.Options.Field}' not found.");
 
         var entity = Expression.Parameter(typeof(Entity));
 
         var value = Expression.Constant(
-            Convert.ChangeType(term.Value.Options.Value, field.PropertyType),
+            term.Options.Value.Deserialize(field.PropertyType),
             field.PropertyType);
 
         var entityField = Expression.Property(entity, field);
 
         var convertedValue = Expression.Convert(value, field.PropertyType);
 
-        var eqLambda = Expression.Lambda<Func<Entity, bool>>(
-                        Expression.Equal(
-                            entityField,
-                            convertedValue),
-                        entity);
+        Expression<Func<Entity, bool>> lambda;
 
-        var gtLambda = Expression.Lambda<Func<Entity, bool>>(
+        try
+        {
+            lambda = term.Options.Op.ToLower() switch
+            {
+                "eq" => Expression.Lambda<Func<Entity, bool>>(
+                               Expression.Equal(
+                                   entityField,
+                                   convertedValue),
+                               entity),
+                "gt" => Expression.Lambda<Func<Entity, bool>>(
                         Expression.GreaterThan(
                             entityField,
                             convertedValue),
-                        entity);
-
-        var ltLambda = Expression.Lambda<Func<Entity, bool>>(
+                        entity),
+                "lt" => Expression.Lambda<Func<Entity, bool>>(
                         Expression.LessThan(
                             entityField,
                             convertedValue),
-                        entity);
-
-        var gteLambda = Expression.Lambda<Func<Entity, bool>>(
+                        entity),
+                "gte" => Expression.Lambda<Func<Entity, bool>>(
                         Expression.GreaterThanOrEqual(
                             entityField,
                             convertedValue),
-                        entity);
-
-        var lteLambda = Expression.Lambda<Func<Entity, bool>>(
+                        entity),
+                "lte" => Expression.Lambda<Func<Entity, bool>>(
                         Expression.LessThanOrEqual(
                             entityField,
                             convertedValue),
-                        entity);
-
-
-
-        var newPredicate = term.Key.ToLower() switch
+                        entity),
+                _ => throw new NotImplementedException("Unknown operator"),
+            };
+        }
+        catch
         {
-            "and" => (ExpressionStarter<Entity>)(term.Value.Options.Op.ToLower() switch
-            {
-                "eq" => predicate.And(eqLambda),
-                "gt" => predicate.And(gtLambda),
-                "lt" => predicate.And(ltLambda),
-                "gte" => predicate.And(gteLambda),
-                "lte" => predicate.And(lteLambda),
-                _ => throw new InvalidCastException("Unsupported operation"),
-            }),
-            "or" => (ExpressionStarter<Entity>)(term.Value.Options.Op.ToLower() switch
-            {
-                "eq" => predicate.And(eqLambda),
-                "gt" => predicate.And(gtLambda),
-                "lt" => predicate.And(ltLambda),
-                "gte" => predicate.And(gteLambda),
-                "lte" => predicate.And(lteLambda),
-                _ => throw new InvalidCastException("Unsupported operation"),
-            }),
-            _ => throw new InvalidCastException("Invalid operator key, operator key should be `AND` or `OR` in any case"),
+            throw new InvalidOperationException($"Operation {term.Options.Op} invalid for value type {field.PropertyType.Name} at field {field.Name}");
+        }
+
+
+
+        var newPredicate = junction switch
+        {
+            Junction.And => (ExpressionStarter<Entity>)predicate.And(lambda),
+            Junction.Or => (ExpressionStarter<Entity>)predicate.Or(lambda),
+            _ => throw new InvalidCastException("Invalid operator key, operator key should be `And` or `Or` in any case"),
         };
 
         return newPredicate;

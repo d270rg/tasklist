@@ -1,4 +1,11 @@
+using System.Text.Json;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi;
+
+public sealed class RequestBodyExampleMetadata(string json)
+{
+    public string Json { get; } = json;
+}
 
 public static class Endpoints
 {
@@ -7,8 +14,69 @@ public static class Endpoints
         var tasksGroup = routes.MapGroup("/tasks");
 
         tasksGroup.MapGet("/{id:guid}", GetById);
-        tasksGroup.MapPost("/page", GetPage);
-        tasksGroup.MapPost("/", Add);
+        tasksGroup.MapPost("/page", GetPage).AddOpenApiOperationTransformer((operation, context, ct) =>
+        {
+            operation.RequestBody ??= new OpenApiRequestBody();
+
+            operation.RequestBody.Content?["application/json"] =
+                new OpenApiMediaType
+                {
+                    Example = JsonSerializer.SerializeToNode(new
+                    {
+                        Filter = new object[]{
+                            new {
+                                Group = new
+                                {
+                                    Junction = "Or",
+                                    Terms = new object[]{
+                                    new {
+                                        Group = new {
+                                            Junction = "And",
+                                             Terms = new object[]{
+                                                new {
+                                                    Options = new
+                                                    {
+                                                        Field = "Title",
+                                                        Op = "eq",
+                                                        Value = "MyTitle1"
+                                                    }
+                                                },
+                                                // new {
+                                                //     Options = new
+                                                //     {
+                                                //         Field = "Deadline",
+                                                //         Op = "lte",
+                                                //         Value = new DateTime(year:2003, month:01, day:28)
+                                                //     }
+                                                // },
+                                             }
+                                        }
+                                    },
+                                    new {
+                                        Options = new
+                                        {
+                                            Field = "Title",
+                                            Op = "eq",
+                                            Value = "MyTitle"
+                                        }
+                                    }
+                                }
+                                }
+                            }
+                        },
+                        SortOptions = new
+                        {
+                            Field = "Title",
+                            Direction = 1
+                        },
+                        Start = 0,
+                        Limit = -1,
+                    })
+                };
+
+            return Task.CompletedTask;
+        });
+        tasksGroup.MapPut("/", Add);
         tasksGroup.MapDelete("/{id:guid}", Delete);
     }
 
@@ -18,6 +86,10 @@ public static class Endpoints
         try
         {
             page = await service.GetPage(pagination);
+        }
+        catch (Exception e) when (e is InvalidOperationException or ArgumentException or InvalidCastException)
+        {
+            return Results.BadRequest(e.Message);
         }
         catch (Exception e)
         {
@@ -46,11 +118,13 @@ public static class Endpoints
         return Results.Ok(result);
     }
 
-    private static async Task<IResult> Add([FromServices] NotesService service, [FromBody] TaskRecord task)
+    private static async Task<IResult> Add([FromServices] NotesService service, [FromBody] APITaskRecord task)
     {
+        TaskRecord entity = task.ToDomain();
+
         try
         {
-            await service.Add(task);
+            await service.Add(entity);
         }
         catch (Exception e)
         {
@@ -60,7 +134,7 @@ public static class Endpoints
         return Results.Ok();
     }
 
-    private static async Task<IResult> Delete([FromServices] NotesService service, [FromRoute] string id)
+    private static async Task<IResult> Delete([FromServices] NotesService service, [FromRoute] Guid id)
     {
         try
         {

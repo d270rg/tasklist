@@ -1,4 +1,3 @@
-using LinqKit;
 using Microsoft.EntityFrameworkCore;
 
 public class NotesService(ApplicationDbContext context)
@@ -25,7 +24,12 @@ public class NotesService(ApplicationDbContext context)
             };
         }
 
-        query = query.Skip(pagination.Start).Take(pagination.Limit);
+        query = query.Skip(pagination.Start);
+
+        if (pagination.Limit != -1)
+        {
+            query = query.Take(pagination.Limit);
+        }
 
         return await query.ToListAsync();
     }
@@ -34,13 +38,16 @@ public class NotesService(ApplicationDbContext context)
         return await context.Tasks.FindAsync(id);
     }
 
-    public async Task Add(TaskRecord task)
+    public async Task<Guid> Add(TaskRecord taskRecord)
     {
-        await context.Tasks.AddAsync(task);
+        var created = context.Tasks.Add(taskRecord);
+        await context.SaveChangesAsync();
+        return (Guid)created.Entity.ID!;
     }
 
-    public async Task Delete(string id)
+    public async Task Delete(Guid id)
     {
         await context.Tasks.Where(task => task.ID == id).ExecuteDeleteAsync();
+        await context.SaveChangesAsync();
     }
 }
