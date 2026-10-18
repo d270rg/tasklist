@@ -1,3 +1,5 @@
+
+using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -14,6 +16,8 @@ builder.Services.AddDbContext<ApplicationDbContext>(options => options.UseMySQL(
 builder.Services.AddOpenApi();
 builder.Services.AddScoped<NotesService>();
 
+builder.Services.AddScoped<IValidator<APITaskRecord>, APITaskRecordValidator>();
+
 var app = builder.Build();
 
 using (var scope = app.Services.CreateScope())
@@ -25,7 +29,6 @@ using (var scope = app.Services.CreateScope())
 }
 
 app.UseHttpsRedirection();
-Endpoints.MapEndpoints(app);
 
 if (app.Environment.IsDevelopment())
 {
@@ -37,4 +40,7 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+
+var routes = app.MapGroup("/").AddEndpointFilter<ValidationFilter>().ProducesValidationProblem();
+Endpoints.MapEndpoints(routes);
 app.Run();

@@ -33,7 +33,7 @@ public class NotesService(ApplicationDbContext context)
 
         return await query.ToListAsync();
     }
-    public async Task<TaskRecord?> GetById(string id)
+    public async Task<TaskRecord?> GetById(Guid id)
     {
         return await context.Tasks.FindAsync(id);
     }

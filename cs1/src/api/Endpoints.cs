@@ -99,7 +99,7 @@ public static class Endpoints
         return Results.Ok(page);
     }
 
-    private static async Task<IResult> GetById([FromServices] NotesService service, [FromRoute] string id)
+    private static async Task<IResult> GetById([FromServices] NotesService service, [FromRoute] Guid id)
     {
         TaskRecord? result;
         try
@@ -122,16 +122,17 @@ public static class Endpoints
     {
         TaskRecord entity = task.ToDomain();
 
+        Guid newID;
         try
         {
-            await service.Add(entity);
+            newID = await service.Add(entity);
         }
         catch (Exception e)
         {
             return Results.Problem(e.ToString());
         }
 
-        return Results.Ok();
+        return Results.Ok(newID);
     }
 
     private static async Task<IResult> Delete([FromServices] NotesService service, [FromRoute] Guid id)
