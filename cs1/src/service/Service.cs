@@ -1,4 +1,9 @@
+using System.Linq.Expressions;
+using System.Reflection;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using Microsoft.EntityFrameworkCore.Query;
 
 public class NotesService(ApplicationDbContext context)
 {
@@ -43,6 +48,50 @@ public class NotesService(ApplicationDbContext context)
         var created = context.Tasks.Add(taskRecord);
         await context.SaveChangesAsync();
         return (Guid)created.Entity.ID!;
+    }
+
+    public async Task<TaskRecord?> Update(Guid id, APITaskRecordUpdate taskUpdate)
+    {
+        var entityToUpdate = context.Tasks.FirstOrDefault(t => t.ID == id);
+        if (entityToUpdate is null)
+        {
+            return null;
+        }
+
+        JsonPatchDocument updateOp = new();
+
+        var properties = typeof(TaskRecord).GetProperties();
+        foreach (var prop in properties)
+        {
+            var updateProperty = typeof(APITaskRecordUpdate).GetProperty(prop.Name,
+                                                                            BindingFlags.IgnoreCase
+                                                                            | BindingFlags.Public
+                                                                            | BindingFlags.Instance);
+            if (updateProperty is not null)
+            {
+                var value = updateProperty.GetValue(taskUpdate);
+                if (value is not null)
+                {
+                    updateOp.Add($"/{prop.Name}", value);
+                }
+                else
+                {
+                    if (new NullabilityInfoContext().Create(prop).WriteState is NullabilityState.Nullable)
+                    {
+                        updateOp.Remove($"/{prop.Name}");
+                    }
+                    else
+                    {
+                        throw new ArgumentException($"Unable to delete required property {prop.Name}");
+                    }
+                }
+            }
+        }
+
+        updateOp.ApplyTo(entityToUpdate);
+        await context.SaveChangesAsync();
+
+        return entityToUpdate;
     }
 
     public async Task<bool> Delete(Guid id)

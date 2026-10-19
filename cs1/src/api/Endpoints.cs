@@ -1,7 +1,8 @@
-using System.Text.Json;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.OpenApi;
+using System.Text.Json;
 
 public sealed class RequestBodyExampleMetadata(string json)
 {
@@ -78,6 +79,7 @@ public static class Endpoints
             return Task.CompletedTask;
         });
         tasksGroup.MapPut("/", Add);
+        tasksGroup.MapPatch("/{id:guid}", Update);
         tasksGroup.MapDelete("/{id:guid}", Delete);
     }
 
@@ -134,6 +136,30 @@ public static class Endpoints
         }
 
         return TypedResults.Ok(newID);
+    }
+
+    private static async Task<Results<Ok<TaskRecord>, NotFound, ProblemHttpResult>> Update(
+        [FromServices] NotesService service,
+        [FromRoute] Guid id,
+        [FromBody] APITaskRecordUpdate update)
+    {
+        TaskRecord? updated;
+        try
+        {
+            updated = await service.Update(id, update);
+        }
+        catch (Exception e)
+        {
+            return TypedResults.Problem(e.ToString());
+        }
+        if (updated is not null)
+        {
+            return TypedResults.Ok(updated);
+        }
+        else
+        {
+            return TypedResults.NotFound();
+        }
     }
 
     private static async Task<Results<Ok, NotFound, ProblemHttpResult>> Delete([FromServices] NotesService service, [FromRoute] Guid id)

@@ -1,7 +1,7 @@
 public record class TaskRecord(
     Guid? ID,
     string Title,
-    DateTime Deadline,
+    DateTime? Deadline,
     int Priority
 );
 
