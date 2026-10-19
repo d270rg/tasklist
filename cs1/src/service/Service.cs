@@ -1,9 +1,6 @@
-using System.Linq.Expressions;
 using System.Reflection;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.EntityFrameworkCore.Metadata.Internal;
-using Microsoft.EntityFrameworkCore.Query;
 
 public class NotesService(ApplicationDbContext context)
 {
