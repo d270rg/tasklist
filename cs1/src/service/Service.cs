@@ -1,6 +1,7 @@
 using System.Reflection;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.EntityFrameworkCore;
+using Swashbuckle.AspNetCore.SwaggerGen;
 
 public class NotesService(ApplicationDbContext context)
 {
@@ -58,8 +59,14 @@ public class NotesService(ApplicationDbContext context)
         JsonPatchDocument updateOp = new();
 
         var properties = typeof(TaskRecord).GetProperties();
+
         foreach (var prop in properties)
         {
+            if (prop.HasAttribute<StonedAttribute>())
+            {
+                throw new ArgumentException($"Unable to mutate property {prop.Name}");
+            }
+
             var updateProperty = typeof(APITaskRecordUpdate).GetProperty(prop.Name,
                                                                             BindingFlags.IgnoreCase
                                                                             | BindingFlags.Public
