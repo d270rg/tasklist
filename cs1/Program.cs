@@ -3,6 +3,7 @@ using FluentValidation;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
+var origins = "Origins";
 
 // DB connect
 var connectionString =
@@ -17,6 +18,18 @@ builder.Services.AddOpenApi();
 builder.Services.AddScoped<NotesService>();
 
 builder.Services.AddScoped<IValidator<APITaskRecord>, APITaskRecordValidator>();
+
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy(name: origins,
+                      policy =>
+                      {
+                          policy.SetIsOriginAllowedToAllowWildcardSubdomains()
+                                      .AllowAnyOrigin()
+                                      .AllowAnyHeader()
+                                      .AllowAnyMethod();
+                      });
+});
 
 var app = builder.Build();
 
@@ -40,7 +53,9 @@ if (app.Environment.IsDevelopment())
     });
 }
 
+app.UseCors(origins);
 
 var routes = app.MapGroup("/").AddEndpointFilter<ValidationFilter>().ProducesValidationProblem();
 Endpoints.MapEndpoints(routes);
+
 app.Run();

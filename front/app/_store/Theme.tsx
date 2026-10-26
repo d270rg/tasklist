@@ -11,7 +11,7 @@ interface State {
   setTheme: (theme: Theme) => void;
 }
 
-export const useTaskPage = create<State>()((set) => ({
+export const useTheme = create<State>()((set) => ({
   theme: Theme.Default,
   setTheme: (theme: Theme) =>
     set({

@@ -1,23 +1,14 @@
+"use client";
+
 import { TimeLeft } from "@/app/_widgets/timeLeft";
 import { getById } from "@/app/api";
-import { useQuery, useQueryClient } from "@tanstack/react-query";
-import { useEffect } from "react";
+import { useQuery } from "@tanstack/react-query";
 
-export default async function Task({
-  params,
-}: {
-  params: Promise<{ id: string }>;
-}) {
-  const { id } = await params;
-
-  const queryClient = useQueryClient();
+export default async function Task({ id }: { id: string }) {
   const taskQuery = useQuery({
     queryKey: ["tasks", id],
     queryFn: () => getById(id),
   });
-  useEffect(() => {
-    queryClient.invalidateQueries({ queryKey: ["tasks", id] });
-  }, [id]);
 
   return (
     <div>

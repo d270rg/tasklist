@@ -131,6 +131,11 @@ static partial class PredicateSpinner<Entity> where Entity : class
                             entityField,
                             convertedValue),
                         entity),
+                "ne" => Expression.Lambda<Func<Entity, bool>>(
+                        Expression.NotEqual(
+                            entityField,
+                            convertedValue),
+                        entity),
                 _ => throw new NotImplementedException("Unknown operator"),
             };
         }

@@ -6,7 +6,8 @@ export enum Junction {
   Or = "Or",
 }
 
-export enum Op {
+export enum OpExpression {
+  NotEquals = "ne",
   Equals = "eq",
   GreaterThan = "gt",
   LessThan = "lt",
@@ -22,19 +23,23 @@ export enum SortDirection {
 const filterGroup = z.object({
   junction: z.enum(Junction),
   get terms() {
-    return filterNode;
+    return z.array(filterNode);
   },
 });
+export type FilterGroup = z.infer<typeof filterGroup>;
+
 const filterOptions = z.object({
   field: z.keyof(task),
-  op: z.enum(Op),
+  op: z.enum(OpExpression),
   value: z.unknown(),
 });
+export type FilterOptions = z.infer<typeof filterOptions>;
+
 const filterNode = z.object({
   get group() {
-    return filterGroup;
+    return z.optional(filterGroup);
   },
-  options: filterOptions,
+  options: z.optional(filterOptions),
 });
 
 export const sort = z.object({
