@@ -19,6 +19,11 @@ builder.Services.AddScoped<NotesService>();
 
 builder.Services.AddScoped<IValidator<APITaskRecord>, APITaskRecordValidator>();
 
+builder.Services.ConfigureHttpJsonOptions(options =>
+{
+    options.SerializerOptions.PropertyNameCaseInsensitive = true;
+});
+
 builder.Services.AddCors(options =>
 {
     options.AddPolicy(name: origins,

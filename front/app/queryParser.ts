@@ -21,7 +21,7 @@ function isOp(op: string): op is Op {
 }
 
 export function parseQuery(searchParams: string): Expression[] {
-  let terms = new URLSearchParams(searchParams).get("q")?.split(" ");
+  let terms = searchParams.split(" ");
 
   if (terms === undefined) {
     return [];
@@ -37,30 +37,19 @@ export function parseQuery(searchParams: string): Expression[] {
         value: splitTerm[0],
       });
     } else {
-      for (const expr of splitTerm) {
-        const key = expr[0];
-        const opAndValue = expr[1];
+      const key = splitTerm[0];
+      const opAndValue = splitTerm[1];
 
-        let value;
-        let op;
-        for (const possibleOp of ops) {
-          const parsed = opAndValue.split(possibleOp);
+      for (const possibleOp of ops) {
+        const parsed = opAndValue.split(possibleOp);
 
-          if (parsed.length > 1) {
-            if (isOp(parsed[0])) {
-              op = parsed[0];
-              value = parsed[1];
-              break;
-            }
-          }
-        }
-
-        if (value !== undefined && op !== undefined) {
+        if (parsed.length > 1) {
           parsedTerms.push({
             key,
-            op,
-            value,
+            op: possibleOp,
+            value: parsed[1],
           });
+          break;
         }
       }
     }

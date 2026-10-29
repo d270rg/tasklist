@@ -2,8 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { intervalToDuration } from "date-fns";
+import { DurationFormat } from "@formatjs/intl-durationformat";
 
-const dateFormat = new Intl.DurationFormat("en-US", { style: "long" });
+const dateFormat = new DurationFormat("en-US", { style: "long" });
 
 export function TimeLeft({ deadline }: { deadline: Date }) {
   const [now, setNow] = useState(Date.now());

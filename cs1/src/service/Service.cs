@@ -11,19 +11,19 @@ public class NotesService(ApplicationDbContext context)
 
         if (pagination.Filter is not null)
         {
-
             var predicate = PredicateSpinner<TaskRecord>.Unwrap(pagination.Filter);
             query = query.Where(predicate);
         }
 
         if (pagination.Sort is not null)
         {
-            query = pagination.Sort.Field switch
+            var isAsc = pagination.Sort.Direction is SortDirection.Asc;
+            query = pagination.Sort.Field.ToLower() switch
             {
-                "Title" => query.OrderBy(t => t.Title),
-                "Deadline" => query.OrderBy(t => t.Deadline),
-                "Priority" => query.OrderBy(t => t.Priority),
-                "ID" or _ => query.OrderBy(t => t.ID)
+                "Title" => isAsc ? query.OrderBy(t => t.Title) : query.OrderByDescending(t => t.Title),
+                "Deadline" => isAsc ? query.OrderBy(t => t.Deadline) : query.OrderByDescending(t => t.Deadline),
+                "Priority" => isAsc ? query.OrderBy(t => t.Priority) : query.OrderByDescending(t => t.Priority),
+                "ID" or _ => isAsc ? query.OrderBy(t => t.ID) : query.OrderByDescending(t => t.Priority)
             };
         }
 
@@ -36,6 +36,7 @@ public class NotesService(ApplicationDbContext context)
 
         return await query.ToListAsync();
     }
+
     public async Task<TaskRecord?> GetById(Guid id)
     {
         return await context.Tasks.FindAsync(id);

@@ -15,7 +15,14 @@ public enum Junction
     Or
 }
 
-public record SortOptions(string Field, int Direction);
+[JsonConverter(typeof(JsonStringEnumConverter))]
+public enum SortDirection
+{
+    Asc,
+    Desc
+}
+
+public record SortOptions(string Field, SortDirection Direction);
 
 public record FilterOptions(string Field, string Op, JsonElement Value);
 
@@ -47,14 +54,20 @@ public record FilterNode(FilterGroup? Group, FilterOptions? Options);
 */
 public record FilterGroup(Junction Junction, FilterNode[]? Terms);
 
+
 static partial class PredicateSpinner<Entity> where Entity : class
 {
+    private static JsonSerializerOptions serializerOptions = new()
+    {
+        NumberHandling = JsonNumberHandling.AllowReadingFromString
+    };
+
     public static ExpressionStarter<Entity> Unwrap(FilterGroup filterGroup, [Optional] ExpressionStarter<Entity> predicate)
     {
-        var newPredicate = predicate ?? PredicateBuilder.New<Entity>();
+        var newPredicate = predicate ?? PredicateBuilder.New<Entity>(true);
         foreach (var term in filterGroup.Terms ?? [])
         {
-            newPredicate = UnwrapTerm(filterGroup.Junction, term, predicate ?? PredicateBuilder.New<Entity>());
+            newPredicate = UnwrapTerm(filterGroup.Junction, term, newPredicate);
         }
 
         return newPredicate;
@@ -93,7 +106,7 @@ static partial class PredicateSpinner<Entity> where Entity : class
         var entity = Expression.Parameter(typeof(Entity));
 
         var value = Expression.Constant(
-            term.Options.Value.Deserialize(field.PropertyType),
+            term.Options.Value.Deserialize(field.PropertyType, serializerOptions),
             field.PropertyType);
 
         var entityField = Expression.Property(entity, field);

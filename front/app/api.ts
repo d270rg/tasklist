@@ -4,10 +4,10 @@ import { task, Task } from "./_models/Task";
 
 export const baseUrl = "http://localhost:5298";
 
-export async function getPage({ pagination }: { pagination: Pagination }) {
+export async function getPage(pagination: Pagination) {
   const response = await fetch(new URL("/tasks/page", baseUrl), {
     method: "POST",
-    body: JSON.stringify({ pagination }),
+    body: JSON.stringify(pagination),
     headers: {
       "Content-Type": "application/json",
     },

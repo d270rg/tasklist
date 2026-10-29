@@ -3,22 +3,21 @@
 import { useQuery } from "@tanstack/react-query";
 import { FilterGroup } from "./_models/Query";
 import { getPage } from "./api";
-import { useRouter } from "next/navigation";
 import { useTaskPage } from "./_store/Pagination";
+import Link from "next/link";
 
 interface TaskListProps {
   filter: FilterGroup;
 }
-export function TaskList({ filter }: TaskListProps) {
-  const router = useRouter();
 
+export function TaskList({ filter }: TaskListProps) {
   const pagination = useTaskPage();
 
   const { data, isPending } = useQuery({
     queryKey: ["tasks", filter],
-    queryFn: () => getPage({ pagination: { filter, ...pagination } }),
+    queryFn: () => getPage({ filter, ...pagination }),
   });
-  console.log(data);
+
   return (
     <div>
       Tasks:
@@ -26,11 +25,11 @@ export function TaskList({ filter }: TaskListProps) {
         {data?.map((task) => {
           return (
             <li key={task.id}>
-              <button onClick={() => router.replace(`/task/${task.id}`)}>
+              <Link href={`/task/${task.id}`}>
                 <div>{task.title}</div>
                 <div>Deadline: {task.deadline.toISOString()}</div>
                 <div>Priority: {task.priority}</div>
-              </button>
+              </Link>
             </li>
           );
         })}
