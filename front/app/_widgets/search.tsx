@@ -29,7 +29,8 @@ export function Search() {
             url.search = "";
           }
 
-          router.replace(url.toString());
+          url.pathname = "/";
+          router.push(url.toString());
         }}
       >
         Filter
