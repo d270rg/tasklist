@@ -9,6 +9,7 @@ import { useEffect, useState } from "react";
 import { PageNavigation } from "../_widgets/pageNav";
 import { Task } from "../_models/Task";
 import { EditModal } from "../_widgets/edit";
+import { TaskEntry } from "./TaskEntry";
 
 interface TaskListProps {
   filter: FilterGroup;
@@ -78,37 +79,12 @@ export function TaskList({ filter, activePage, pageSize }: TaskListProps) {
         Tasks:
         {data?.values.map((task) => {
           return (
-            <div key={task.id} className="p-2">
-              <div className="d-flex flex-row justify-content-between">
-                <div className="d-flex flex-column flex-grow-1">
-                  <Link href={`/task/${task.id}`}>
-                    <div>{task.title}</div>
-                    <div>Deadline: {task.deadline.toLocaleString()}</div>
-                  </Link>
-                </div>
-
-                <div className="d-flex flex-column">
-                  <div className="d-flex flex-row">
-                    <button
-                      className="z-3"
-                      onClick={() => deleteMutation.mutate(task.id)}
-                    >
-                      Delete
-                    </button>
-                    <button
-                      onClick={() => {
-                        setModalData(task);
-                        setModalOpened(true);
-                      }}
-                    >
-                      Edit
-                    </button>
-                  </div>
-
-                  <div>Priority: {task.priority}</div>
-                </div>
-              </div>
-            </div>
+            <TaskEntry
+              task={task}
+              deleteMutation={deleteMutation}
+              setModalData={setModalData}
+              setModalOpened={setModalOpened}
+            ></TaskEntry>
           );
         })}
         <div className="w-100 justify-content-center">
