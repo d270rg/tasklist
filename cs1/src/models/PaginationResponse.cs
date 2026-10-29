@@ -1,0 +1,1 @@
+public record class PaginationResponse(List<TaskRecord> Values, int Size);
