@@ -5,9 +5,10 @@ using Swashbuckle.AspNetCore.SwaggerGen;
 
 public class NotesService(ApplicationDbContext context)
 {
-    public async Task<List<TaskRecord>> GetPage(Pagination pagination)
+    public async Task<PaginationResponse> GetPage(Pagination pagination)
     {
         IQueryable<TaskRecord> query = context.Tasks;
+        int size;
 
         if (pagination.Filter is not null)
         {
@@ -27,14 +28,16 @@ public class NotesService(ApplicationDbContext context)
             };
         }
 
+        size = query.Count();
         query = query.Skip(pagination.Start);
 
         if (pagination.Limit != -1)
         {
-            query = query.Take(pagination.Limit);
+            query = query.Take(pagination.Limit - pagination.Start);
         }
 
-        return await query.ToListAsync();
+        var valuesList = await query.ToListAsync();
+        return new(valuesList, size);
     }
 
     public async Task<TaskRecord?> GetById(Guid id)

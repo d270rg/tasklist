@@ -83,9 +83,10 @@ public static class Endpoints
         tasksGroup.MapDelete("/{id:guid}", Delete);
     }
 
-    private static async Task<Results<Ok<List<TaskRecord>>, BadRequest<string>, ProblemHttpResult>> GetPage([FromServices] NotesService service, [FromBody] Pagination pagination)
+    private static async Task<Results<Ok<PaginationResponse>, BadRequest<string>, ProblemHttpResult>> GetPage([FromServices] NotesService service, [FromBody] Pagination pagination)
     {
-        List<TaskRecord> page;
+        PaginationResponse page;
+
         try
         {
             page = await service.GetPage(pagination);

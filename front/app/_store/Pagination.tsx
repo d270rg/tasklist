@@ -6,6 +6,9 @@ interface State {
   start: number;
   limit: number;
   sort: Sort;
+  setLimits: (start: number, limit: number) => void;
+  setSortField: (field: keyof Task) => void;
+  setSortDirection: (direction: SortDirection) => void;
 }
 
 export const useTaskPage = create<State>()((set) => ({

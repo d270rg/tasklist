@@ -1,6 +1,7 @@
 import z from "zod";
 import { Pagination } from "./_models/Query";
 import { task, Task } from "./_models/Task";
+import { paginationResponse } from "./_models/PaginationResponse";
 
 export const baseUrl = "http://localhost:5298";
 
@@ -14,7 +15,7 @@ export async function getPage(pagination: Pagination) {
   });
 
   const json = await response.json();
-  const parsedResponse = z.safeParse(z.array(task), json);
+  const parsedResponse = z.safeParse(paginationResponse, json);
 
   if (parsedResponse.error) {
     console.log("GetPage error:", parsedResponse.error.issues);
