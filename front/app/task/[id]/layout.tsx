@@ -1,10 +1,13 @@
 import { Suspense } from "react";
-import Task from "./page";
+
+export function generateStaticParams() {
+  return [{ id: "" }];
+}
 
 export default async function TaskLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <Suspense fallback={<p>Loading task…</p>}>{children}</Suspense>;
+  return <Suspense fallback={<p>Loading task…</p>}>{children} </Suspense>;
 }

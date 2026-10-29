@@ -12,18 +12,34 @@ export function PageNavigation({
   for (let i = 1; i <= pageAmount; i++) {
     if (i === current) {
       navElements.push(
-        <li className="active" key={i}>
+        <div key={`${i}`} className="active m-1">
           {i}
-        </li>,
+        </div>,
       );
     } else {
       navElements.push(
-        <li key={i}>
+        <div key={`${i}`} className="m-1">
           <Link href={`/${i}`}>{i}</Link>
-        </li>,
+        </div>,
       );
     }
   }
 
-  return <ul>{navElements}</ul>;
+  return (
+    <div className="d-flex flex-row w-100 justify-content-center">
+      <Link
+        className={pageAmount > 1 && current > 1 ? "" : "disabled text-muted"}
+        href={`/${current - 1}`}
+      >
+        {"<"}
+      </Link>
+      {navElements}
+      <Link
+        className={pageAmount - current > 1 ? "" : "disabled text-muted"}
+        href={`/${current + 1}`}
+      >
+        {">"}
+      </Link>
+    </div>
+  );
 }

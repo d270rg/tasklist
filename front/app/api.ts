@@ -55,7 +55,7 @@ export async function addTask(task: Omit<Task, "id">) {
 export async function updateTask(
   id: string,
   update: Partial<Omit<Task, "id">>,
-) {
+): Promise<Task> {
   const response = await fetch(new URL(`/tasks/${id}`, baseUrl), {
     method: "PATCH",
     body: JSON.stringify(update),
@@ -69,6 +69,7 @@ export async function updateTask(
 
   if (parsedResponse.error) {
     console.log("GetPage error:", parsedResponse.error.issues);
+    throw parsedResponse.error;
   }
 
   return parsedResponse.data;

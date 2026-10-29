@@ -1,0 +1,29 @@
+.datePickerPopup {
+  min-width: 17rem;
+}
+
+.dateTimePickerPopup {
+  min-width: 18rem;
+}
+
+.datePickerGrid {
+  grid-template-columns: repeat(7, 2.25rem);
+  gap: 0.125rem;
+}
+
+.datePickerWeekday {
+  width: 2.25rem;
+}
+
+.datePickerDay {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.timePickerField {
+  width: 4rem;
+}
+
+.counterField {
+  width: 5rem;
+}

@@ -1,4 +1,4 @@
-import { Suspense } from "react";
+import { Suspense, createElement } from "react";
 import { TaskList } from "./taskList";
 import { Expression, parseQuery, transformQueryToFilter } from "./queryParser";
 import { Search } from "../_widgets/search";
@@ -25,15 +25,16 @@ export default async function Home({
   const filter = transformQueryToFilter(tryParseQueryFromSearchParams(search));
 
   return (
-    <div className="flex flex-col flex-1 items-center justify-center bg-zinc-50 font-sans dark:bg-black">
-      <main className="flex flex-1 w-full max-w-3xl flex-col items-center justify-between py-32 px-16 bg-white dark:bg-black sm:items-start">
+    <div className="wv-100 d-flex flex-column align-items-center p-3">
+      <div className="d-flex flex-row">
         <Suspense fallback={<p>Loading...</p>}>
           <Search />
         </Suspense>
-        <Suspense fallback={<p>Loading tasks…</p>}>
-          <TaskList filter={filter} activePage={Number(page)} pageSize={10} />
-        </Suspense>
-      </main>
+        <button className="ms-1">Add</button>
+      </div>
+      <Suspense fallback={<p>Loading tasks…</p>}>
+        <TaskList filter={filter} activePage={Number(page)} pageSize={10} />
+      </Suspense>
     </div>
   );
 }
