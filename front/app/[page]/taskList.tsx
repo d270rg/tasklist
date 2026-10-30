@@ -6,11 +6,7 @@ import { deleteTask, getPage, updateTask } from "../api";
 import { useTaskPage } from "../_store/Pagination";
 import { useEffect, useState } from "react";
 import { PageNavigation } from "../_widgets/pageNav";
-import { Task } from "../_models/Task";
-import { EditModal } from "../_widgets/edit";
 import { TaskEntry } from "./TaskEntry";
-import "./TaskList.css";
-import { useModal } from "../_store/Modal";
 
 interface TaskListProps {
   filter: FilterGroup;
@@ -53,10 +49,20 @@ export function TaskList({ filter, activePage, pageSize }: TaskListProps) {
         <div>
           {data?.values.map((task) => {
             return (
-              <TaskEntry
-                task={task}
-                deleteMutation={deleteMutation}
-              ></TaskEntry>
+              <div className="d-flex flex-row w-100 my-2">
+                <div
+                  className={
+                    "me-1 p-1 d-flex align-items-center " +
+                    `priority-${task.priority}`
+                  }
+                >
+                  {task.priority}
+                </div>
+                <TaskEntry
+                  task={task}
+                  deleteMutation={deleteMutation}
+                ></TaskEntry>
+              </div>
             );
           })}
         </div>

@@ -99,7 +99,7 @@ export function EditModal({
 
   const title = form["title"]?.value as string | undefined;
   const deadline = form["deadline"]?.value as Date | undefined;
-  const priority = form["priority"]?.value as number | undefined;
+  const priority = (form["priority"]?.value ?? 0) as number | undefined;
 
   return (
     <div className="d-flex flex-column justify-content-between h-100">
@@ -149,13 +149,16 @@ export function EditModal({
       </div>
       <div className="d-flex justify-content-between w-100">
         <button
-          className="btn btn-success"
+          className="btn btn-outline-secondary btn-hover-success"
           disabled={!!form["title"]?.error || !!form["deadline"]?.error}
           onClick={() => onSave(mapModelsToData(form))}
         >
           {initialData ? "Save" : "Add"}
         </button>
-        <button className="btn btn-secondary" onClick={() => onCancel()}>
+        <button
+          className="btn btn-outline-secondary btn-hover-cancel"
+          onClick={() => onCancel()}
+        >
           Cancel
         </button>
       </div>

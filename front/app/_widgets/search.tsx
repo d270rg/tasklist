@@ -23,7 +23,7 @@ export function Search() {
         value={query}
       ></input>
       <button
-        className="btn btn-dark right-button"
+        className="btn bg-2 text-light right-button"
         onClick={() => {
           const url = new URL(window.location.toString());
           if (query !== "") {

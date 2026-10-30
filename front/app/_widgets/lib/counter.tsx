@@ -21,11 +21,11 @@ export function Counter({
   const increment = Math.max(1, Math.trunc(step));
 
   function update(next: number) {
-    let bounded = Math.max(0, Math.trunc(next));
-    if (bounded === current) return;
-
-    setInnerValue(bounded);
-    onChange?.(bounded);
+    if (next > 10) {
+      return;
+    }
+    setInnerValue(next);
+    onChange?.(next);
   }
 
   return (
@@ -35,6 +35,7 @@ export function Counter({
         type="number"
         value={current}
         min={0}
+        max={10}
         step={increment}
         disabled={disabled}
         onChange={(event) => {
@@ -58,7 +59,7 @@ export function Counter({
           type="button"
           className="btn btn-sm btn-outline-secondary"
           onClick={() => update(current + increment)}
-          disabled={disabled}
+          disabled={disabled || current === 10}
           aria-label={`Increase ${label}`}
         >
           {"\u25B2"}

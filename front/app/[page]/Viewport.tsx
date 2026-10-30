@@ -10,6 +10,7 @@ import { useTaskPage } from "../_store/Pagination";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { Task } from "../_models/Task";
 import { addTask, updateTask } from "../api";
+import "./Viewport.css";
 
 export default function Viewport({
   filter,
@@ -46,20 +47,32 @@ export default function Viewport({
   });
 
   return (
-    <div className="h-100 d-flex flex-column align-items-center p-3">
+    <div className="h-100 d-flex flex-column align-items-center justify-content-stretch p-3">
       <div className="d-flex flex-row mb-4">
         <Suspense fallback={<p>Loading...</p>}>
           <Search />
         </Suspense>
         <button
-          className="ms-1 btn btn-dark"
+          className="ms-1 btn bg-2 text-light"
           onClick={() => {
             modalState.setMode(Mode.Create);
             modalState.setModalData(undefined);
             modalState.setOpened(true);
           }}
         >
-          Add
+          <svg
+            xmlns="http://www.w3.org/2000/svg"
+            width="16"
+            height="16"
+            fill="currentColor"
+            className="bi bi-plus-lg"
+            viewBox="0 0 16 16"
+          >
+            <path
+              fill-rule="evenodd"
+              d="M8 2a.5.5 0 0 1 .5.5v5h5a.5.5 0 0 1 0 1h-5v5a.5.5 0 0 1-1 0v-5h-5a.5.5 0 0 1 0-1h5v-5A.5.5 0 0 1 8 2"
+            />
+          </svg>
         </button>
       </div>
       <Suspense fallback={<p>Loading tasks…</p>}>
@@ -67,7 +80,7 @@ export default function Viewport({
       </Suspense>
 
       <div hidden={!modalState.modalOpened} className="modal-container">
-        <div className="modal-body bg-dark text-light p-3 rounded">
+        <div className="modal-body bg-dark text-light p-3 rounded border border-light">
           <EditModal
             initialData={modalState.modalData}
             onSave={(task) => {
@@ -81,7 +94,10 @@ export default function Viewport({
 
               modalState.setOpened(false);
             }}
-            onCancel={() => modalState.setOpened(false)}
+            onCancel={() => {
+              modalState.setOpened(false);
+              modalState.setModalData(undefined);
+            }}
           ></EditModal>
         </div>
       </div>

@@ -21,10 +21,10 @@ public class NotesService(ApplicationDbContext context)
             var isAsc = pagination.Sort.Direction is SortDirection.Asc;
             query = pagination.Sort.Field.ToLower() switch
             {
-                "Title" => isAsc ? query.OrderBy(t => t.Title) : query.OrderByDescending(t => t.Title),
-                "Deadline" => isAsc ? query.OrderBy(t => t.Deadline) : query.OrderByDescending(t => t.Deadline),
-                "Priority" => isAsc ? query.OrderBy(t => t.Priority) : query.OrderByDescending(t => t.Priority),
-                "ID" or _ => isAsc ? query.OrderBy(t => t.ID) : query.OrderByDescending(t => t.Priority)
+                "title" => isAsc ? query.OrderBy(t => t.Title) : query.OrderByDescending(t => t.Title),
+                "deadline" => isAsc ? query.OrderBy(t => t.Deadline) : query.OrderByDescending(t => t.Deadline),
+                "priority" => isAsc ? query.OrderBy(t => t.Priority) : query.OrderByDescending(t => t.Priority),
+                "id" or _ => isAsc ? query.OrderBy(t => t.ID) : query.OrderByDescending(t => t.Priority)
             };
         }
 

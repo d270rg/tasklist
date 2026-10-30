@@ -15,7 +15,7 @@ export const useTaskPage = create<State>()((set) => ({
   start: 0,
   limit: 10,
   sort: {
-    field: "createdAt",
+    field: "priority",
     direction: SortDirection.Asc,
   },
   setLimits: (start: number, limit: number) => set({ start, limit }),

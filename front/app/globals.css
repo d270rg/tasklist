@@ -13,3 +13,87 @@ a {
   cursor: default !important;
   pointer-events: none;
 }
+
+/* --- COLORS --- */
+.bg-1 {
+  background-color: rgb(28, 28, 28);
+}
+.color-1 {
+  color: rgb(28, 28, 28);
+}
+
+.bg-2 {
+  background-color: rgb(45, 45, 45);
+}
+.color-2 {
+  color: rgb(45, 45, 45);
+}
+
+.bg-3 {
+  background-color: rgb(195, 79, 147);
+}
+.color-3 {
+  color: rgb(195, 79, 147);
+}
+
+.btn.text-light:hover {
+   color: rgb(195, 79, 147) !important;
+}
+
+.btn-hover-success:hover{
+   color: rgb(114, 155, 67) !important;
+   border-color: rgb(114, 155, 67) !important;
+   background-color: unset;
+}
+
+.btn-hover-cancel:hover{
+   color: rgb(212, 72, 72) !important;
+   border-color: rgb(212, 72, 72) !important;
+   background-color: unset;
+}
+
+.priority-0 {
+   background-color: rgb(211, 48, 48);
+}
+
+.priority-1 {
+   background-color: rgb(211, 64, 48);
+}
+
+.priority-2 {
+  background-color: rgb(211, 80, 48);
+}
+
+.priority-3 {
+  background-color: rgb(211, 127, 48);
+}
+
+
+.priority-4 {
+   background-color: rgb(211, 162, 48)
+}
+
+.priority-5 {
+   background-color: rgb(211, 195, 48);
+}
+
+.priority-6 {
+   background-color: rgb(211, 208, 48);
+}
+
+.priority-7 {
+   background-color: rgb(184, 211, 48);
+}
+
+.priority-8 {
+   background-color: rgb(162, 211, 48);
+}
+
+.priority-9 {
+   background-color: rgb(129, 211, 48);
+}
+
+.priority-10 {
+   background-color: rgb(89, 211, 48);
+}
+

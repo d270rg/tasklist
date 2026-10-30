@@ -7,7 +7,7 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="vh-100 vw-100">
+      <body className="vh-100 vw-100 bg-1">
         <Providers>{children}</Providers>
       </body>
     </html>
