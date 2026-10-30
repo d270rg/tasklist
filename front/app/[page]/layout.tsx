@@ -11,5 +11,5 @@ export default async function PageLayout({
 }: {
   children: React.ReactNode;
 }) {
-  return <div>{children}</div>;
+  return <div className="h-100">{children}</div>;
 }

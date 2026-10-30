@@ -29,9 +29,9 @@ export function Counter({
   }
 
   return (
-    <div className="d-flex align-items-start">
+    <div className="d-flex align-items-center">
       <input
-        className={`form-control text-center ${styles.counterField}`}
+        className={`text-center ${styles.counterField}`}
         type="number"
         value={current}
         min={0}

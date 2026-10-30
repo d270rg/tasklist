@@ -7,7 +7,7 @@ export default async function RootLayout({
 }) {
   return (
     <html lang="en">
-      <body className="min-h-full flex flex-col">
+      <body className="vh-100 vw-100">
         <Providers>{children}</Providers>
       </body>
     </html>

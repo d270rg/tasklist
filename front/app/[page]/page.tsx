@@ -1,7 +1,9 @@
-import { Suspense, createElement } from "react";
-import { TaskList } from "./taskList";
+import { Suspense } from "react";
 import { Expression, parseQuery, transformQueryToFilter } from "./queryParser";
 import { Search } from "../_widgets/search";
+import { TaskList } from "./TaskList";
+import { useModal } from "../_store/Modal";
+import Viewport from "./Viewport";
 
 type SearchParams = { [key: string]: string | string[] | undefined };
 
@@ -24,19 +26,7 @@ export default async function Home({
   const page = (await params).page;
   const filter = transformQueryToFilter(tryParseQueryFromSearchParams(search));
 
-  return (
-    <div className="wv-100 d-flex flex-column align-items-center p-3">
-      <div className="d-flex flex-row">
-        <Suspense fallback={<p>Loading...</p>}>
-          <Search />
-        </Suspense>
-        <button className="ms-1">Add</button>
-      </div>
-      <Suspense fallback={<p>Loading tasks…</p>}>
-        <TaskList filter={filter} activePage={Number(page)} pageSize={10} />
-      </Suspense>
-    </div>
-  );
+  return <Viewport page={Number(page)} filter={filter}></Viewport>;
 }
 
 export const instant = false;

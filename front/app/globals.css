@@ -4,7 +4,12 @@ body {
   font-family: Arial, Helvetica, sans-serif;
 }
 
+a {
+  color: unset;
+  text-decoration: none; 
+}
+
 .disabled { 
-  cursor: default;
+  cursor: default !important;
   pointer-events: none;
 }

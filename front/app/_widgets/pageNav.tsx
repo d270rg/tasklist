@@ -12,13 +12,13 @@ export function PageNavigation({
   for (let i = 1; i <= pageAmount; i++) {
     if (i === current) {
       navElements.push(
-        <div key={`${i}`} className="active m-1">
+        <div key={`${i}`} className="active disabled m-1 btn btn-light">
           {i}
         </div>,
       );
     } else {
       navElements.push(
-        <div key={`${i}`} className="m-1">
+        <div key={`${i}`} className="m-1 btn btn-light">
           <Link href={`/${i}`}>{i}</Link>
         </div>,
       );
@@ -26,19 +26,19 @@ export function PageNavigation({
   }
 
   return (
-    <div className="d-flex flex-row w-100 justify-content-center">
+    <div className="d-flex flex-row w-100 justify-content-center align-items-center">
       <Link
         className={pageAmount > 1 && current > 1 ? "" : "disabled text-muted"}
         href={`/${current - 1}`}
       >
-        {"<"}
+        <div className="btn btn-light">{"<"}</div>
       </Link>
       {navElements}
       <Link
         className={pageAmount - current > 1 ? "" : "disabled text-muted"}
         href={`/${current + 1}`}
       >
-        {">"}
+        <div className="btn btn-light">{">"}</div>
       </Link>
     </div>
   );

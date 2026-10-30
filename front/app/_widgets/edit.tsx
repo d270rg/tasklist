@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Task } from "../_models/Task";
 import { DateTimePicker } from "./lib/dateTimePicker";
 import { Counter } from "./lib/counter";
+import { Mode } from "../_store/Modal";
 
 interface ValidationResult<T> {
   value: T;
@@ -101,51 +102,63 @@ export function EditModal({
   const priority = form["priority"]?.value as number | undefined;
 
   return (
-    <div className="d-flex flex-column">
-      Title:
-      <input
-        placeholder="Title"
-        value={title}
-        onChange={(e) =>
-          setForm((prev) => ({
-            ...prev,
-            title: validate("title", e.target.value),
-          }))
-        }
-      ></input>
-      {form["title"]?.error ? (
-        <div className="text-error">{form["title"]?.error}</div>
-      ) : null}
-      Deadline:
-      <DateTimePicker
-        value={deadline}
-        onChange={(nextDeadline) => {
-          setForm((prev) => ({
-            ...prev,
-            deadline: validate("deadline", nextDeadline),
-          }));
-        }}
-      ></DateTimePicker>
-      {form["deadline"]?.error ? (
-        <div className="text-error">{form["deadline"]?.error}</div>
-      ) : null}
-      Priority:
-      <Counter
-        value={priority}
-        onChange={(nextPriority) =>
-          setForm((prev) => ({
-            ...prev,
-            priority: validate("priority", nextPriority),
-          }))
-        }
-      ></Counter>
-      <button
-        disabled={!!form["title"]?.error || !!form["deadline"]?.error}
-        onClick={() => onSave(mapModelsToData(form))}
-      >
-        {initialData ? "Save" : "Add"}
-      </button>
-      <button onClick={() => onCancel()}>Cancel</button>
+    <div className="d-flex flex-column justify-content-between h-100">
+      <div className="d-flex flex-column">
+        <div className="pb-1">Title:</div>
+        <input
+          className="form-control"
+          placeholder="Title"
+          value={title}
+          onChange={(e) =>
+            setForm((prev) => ({
+              ...prev,
+              title: validate("title", e.target.value),
+            }))
+          }
+        ></input>
+        {form["title"]?.error ? (
+          <div className="text-danger">{form["title"]?.error}</div>
+        ) : null}
+      </div>
+      <div className="d-flex flex-column">
+        <div className="pb-1">Deadline:</div>
+        <DateTimePicker
+          value={deadline}
+          onChange={(nextDeadline) => {
+            setForm((prev) => ({
+              ...prev,
+              deadline: validate("deadline", nextDeadline),
+            }));
+          }}
+        ></DateTimePicker>
+        {form["deadline"]?.error ? (
+          <div className="text-danger">{form["deadline"]?.error}</div>
+        ) : null}
+      </div>
+      <div className="d-flex flex-row justify-content-between align-items-center">
+        Priority:
+        <Counter
+          value={priority}
+          onChange={(nextPriority) =>
+            setForm((prev) => ({
+              ...prev,
+              priority: validate("priority", nextPriority),
+            }))
+          }
+        ></Counter>
+      </div>
+      <div className="d-flex justify-content-between w-100">
+        <button
+          className="btn btn-success"
+          disabled={!!form["title"]?.error || !!form["deadline"]?.error}
+          onClick={() => onSave(mapModelsToData(form))}
+        >
+          {initialData ? "Save" : "Add"}
+        </button>
+        <button className="btn btn-secondary" onClick={() => onCancel()}>
+          Cancel
+        </button>
+      </div>
     </div>
   );
 }

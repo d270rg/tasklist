@@ -1,0 +1,16 @@
+.modal-container {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.modal-body {
+    width: 300px;
+    height: 350px;
+    flex: unset;
+}

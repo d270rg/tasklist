@@ -87,7 +87,7 @@ export function Calendar({
             <button
               key={day.toISOString()}
               type="button"
-              className={`btn btn-sm border-0 p-0 ${dayClass} ${styles.datePickerDay}`}
+              className={`btn btn-sm p-0 ${dayClass} ${styles.datePickerDay}`}
               onClick={() => onSelect(day)}
               disabled={outOfRange}
               aria-pressed={selected}
@@ -165,7 +165,6 @@ export function DatePicker({
     <div ref={rootRef} className="position-relative d-inline-block">
       <div className="input-group">
         <input
-          className="form-control"
           value={value ? format(value, "MMM d, yyyy") : ""}
           placeholder={placeholder}
           readOnly
