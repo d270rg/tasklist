@@ -90,7 +90,7 @@ export function EditModal({
   onCancel: () => void;
 }) {
   const [form, setForm] = useState<Record<string, ValidationResult<unknown>>>(
-    mapDataToModels(initialData),
+    {},
   );
 
   useEffect(() => {
@@ -108,7 +108,7 @@ export function EditModal({
         <input
           className="form-control"
           placeholder="Title"
-          value={title}
+          value={title ?? ""}
           onChange={(e) =>
             setForm((prev) => ({
               ...prev,
