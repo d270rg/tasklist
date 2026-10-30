@@ -40,16 +40,26 @@ a {
    color: rgb(195, 79, 147) !important;
 }
 
-.btn-hover-success:hover{
-   color: rgb(114, 155, 67) !important;
-   border-color: rgb(114, 155, 67) !important;
+.primary-button {
+   color: rgb(138, 60, 105);
+   border-color: rgb(138, 60, 105);
    background-color: unset;
 }
 
-.btn-hover-cancel:hover{
-   color: rgb(212, 72, 72) !important;
-   border-color: rgb(212, 72, 72) !important;
+.primary-button:hover {
+   color: rgb(183, 80, 140);
+   border-color: rgb(183, 80, 140);
+}
+
+.secondary-button {
+   color: rgb(124, 124, 124);
+   border-color: rgb(124, 124, 124);
    background-color: unset;
+}
+
+.secondary-button:hover {
+   color: rgb(152, 152, 152);
+   border-color: rgb(152, 152, 152);
 }
 
 .priority-0 {

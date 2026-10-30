@@ -149,16 +149,13 @@ export function EditModal({
       </div>
       <div className="d-flex justify-content-between w-100">
         <button
-          className="btn btn-outline-secondary btn-hover-success"
+          className="btn primary-button"
           disabled={!!form["title"]?.error || !!form["deadline"]?.error}
           onClick={() => onSave(mapModelsToData(form))}
         >
           {initialData ? "Save" : "Add"}
         </button>
-        <button
-          className="btn btn-outline-secondary btn-hover-cancel"
-          onClick={() => onCancel()}
-        >
+        <button className="btn secondary-button" onClick={() => onCancel()}>
           Cancel
         </button>
       </div>

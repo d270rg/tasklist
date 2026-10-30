@@ -27,3 +27,54 @@
 .counterField {
   width: 5rem;
 }
+
+.pickerButton {
+  border-color: transparent !important;
+}
+
+.pickerButton:hover:not(:disabled),
+.pickerButton:focus-visible:not(:disabled) {
+  border-color: var(--bs-light) !important;
+}
+
+.pickerButtonSelected {
+  background-color: transparent !important;
+  border-color: rgb(195, 79, 147) !important;
+  color: rgb(195, 79, 147) !important;
+}
+
+.pickerButtonSelected:hover:not(:disabled),
+.pickerButtonSelected:focus-visible:not(:disabled) {
+  background-color: rgb(195, 79, 147) !important;
+  border-color: rgb(195, 79, 147) !important;
+  color: var(--bs-light) !important;
+}
+
+.pickerToggleButton:hover:not(:disabled),
+.pickerToggleButton:focus-visible:not(:disabled) {
+  background-color: rgb(195, 79, 147) !important;
+  border-color: rgb(195, 79, 147) !important;
+  color: var(--bs-light) !important;
+}
+
+.primary-button {
+   color: rgb(138, 60, 105);
+   border-color: rgb(138, 60, 105);
+   background-color: unset;
+}
+
+.primary-button:hover {
+   color: rgb(183, 80, 140);
+   border-color: rgb(183, 80, 140);
+}
+
+.secondary-button {
+   color: rgb(124, 124, 124);
+   border-color: rgb(124, 124, 124);
+   background-color: unset;
+}
+
+.secondary-button:hover {
+   color: rgb(152, 152, 152);
+   border-color: rgb(152, 152, 152);
+}

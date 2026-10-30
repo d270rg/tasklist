@@ -63,7 +63,7 @@ function TimeField({
     <div className="d-flex flex-column align-items-center">
       <button
         type="button"
-        className="btn btn-sm btn-outline-secondary"
+        className={`btn btn-sm btn-outline-light mb-1 ${styles.pickerButton}`}
         onClick={() => adjust(1)}
         disabled={disabled}
         aria-label={`Increase ${label}`}
@@ -71,7 +71,7 @@ function TimeField({
         {"\u25B2"}
       </button>
       <input
-        className={`form-control form-control-sm text-center ${styles.timePickerField}`}
+        className={`form-control form-control-sm text-center bg-1 text-light ${styles.timePickerField}`}
         type="text"
         inputMode="numeric"
         value={draft}
@@ -105,7 +105,7 @@ function TimeField({
       />
       <button
         type="button"
-        className="btn btn-sm btn-outline-secondary"
+        className={`btn btn-sm btn-outline-light mt-1 ${styles.pickerButton}`}
         onClick={() => adjust(-1)}
         disabled={disabled}
         aria-label={`Decrease ${label}`}
@@ -149,7 +149,7 @@ export function TimePicker({
   }
 
   return (
-    <div className="d-flex align-items-start gap-1">
+    <div className="d-flex align-items-center gap-1">
       <TimeField
         value={hour12}
         min={1}
@@ -160,7 +160,7 @@ export function TimePicker({
         onAdjust={shiftHours}
       />
 
-      <span className="pt-2">:</span>
+      <span>:</span>
 
       <TimeField
         value={minute}
@@ -180,7 +180,9 @@ export function TimePicker({
         <button
           type="button"
           className={`btn btn-sm ${
-            meridiem === "AM" ? "btn-primary" : "btn-outline-secondary"
+            meridiem === "AM"
+              ? `bg-3 ${styles.pickerButtonSelected}`
+              : `btn-outline-light ${styles.pickerButton}`
           }`}
           onClick={() => updateTime(to24Hour(hour12, "AM"), minute)}
           disabled={disabled}
@@ -191,7 +193,9 @@ export function TimePicker({
         <button
           type="button"
           className={`btn btn-sm ${
-            meridiem === "PM" ? "btn-primary" : "btn-outline-secondary"
+            meridiem === "PM"
+              ? `bg-3 ${styles.pickerButtonSelected}`
+              : `btn-outline-light ${styles.pickerButton}`
           }`}
           onClick={() => updateTime(to24Hour(hour12, "PM"), minute)}
           disabled={disabled}

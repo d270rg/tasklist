@@ -57,7 +57,7 @@ export function Counter({
       <div className="d-flex flex-column ms-1">
         <button
           type="button"
-          className="btn btn-sm btn-outline-secondary"
+          className="btn btn-sm secondary-button mb-1"
           onClick={() => update(current + increment)}
           disabled={disabled || current === 10}
           aria-label={`Increase ${label}`}
@@ -66,7 +66,7 @@ export function Counter({
         </button>
         <button
           type="button"
-          className="btn btn-sm btn-outline-secondary"
+          className="btn btn-sm secondary-button"
           onClick={() => update(current - increment)}
           disabled={disabled || current <= 0}
           aria-label={`Decrease ${label}`}

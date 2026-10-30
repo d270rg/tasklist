@@ -84,7 +84,7 @@ export function DateTimePicker({
         />
         <button
           type="button"
-          className="btn btn-outline-secondary"
+          className={`btn btn-outline-light ${styles.pickerButton} ${styles.pickerToggleButton}`}
           onClick={toggle}
           disabled={disabled}
           aria-label="Toggle date and time picker"
@@ -103,7 +103,7 @@ export function DateTimePicker({
 
       {open && (
         <div
-          className={`dropdown-menu show p-2 shadow ${styles.dateTimePickerPopup}`}
+          className={`dropdown-menu show p-2 shadow bg-1 text-light ${styles.dateTimePickerPopup}`}
           role="dialog"
           aria-label="Date and time"
         >
@@ -113,7 +113,7 @@ export function DateTimePicker({
           <div className="d-flex justify-content-end mt-2">
             <button
               type="button"
-              className="btn btn-sm btn-primary"
+              className={`btn btn-sm bg-3 ${styles.pickerButtonSelected}`}
               onClick={() => setOpen(false)}
             >
               Done

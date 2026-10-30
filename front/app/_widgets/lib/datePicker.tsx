@@ -40,7 +40,7 @@ export function Calendar({
       <div className="d-flex justify-content-between align-items-center mb-2">
         <button
           type="button"
-          className="btn btn-sm btn-outline-secondary"
+          className={`btn btn-sm btn-outline-light ${styles.pickerButton}`}
           onClick={() => setViewDate(subMonths(viewDate, 1))}
           aria-label="Previous month"
         >
@@ -49,7 +49,7 @@ export function Calendar({
         <div className="fw-semibold">{format(viewDate, "MMMM yyyy")}</div>
         <button
           type="button"
-          className="btn btn-sm btn-outline-secondary"
+          className={`btn btn-sm btn-outline-light ${styles.pickerButton}`}
           onClick={() => setViewDate(addMonths(viewDate, 1))}
           aria-label="Next month"
         >
@@ -61,7 +61,7 @@ export function Calendar({
         {weekDays.map((weekDay) => (
           <div
             key={weekDay}
-            className={`text-center small text-muted ${styles.datePickerWeekday}`}
+            className={`text-center small text-light ${styles.datePickerWeekday}`}
           >
             {weekDay}
           </div>
@@ -76,18 +76,20 @@ export function Calendar({
           const outOfRange =
             maxDate !== undefined &&
             isAfter(startOfDay(day), startOfDay(maxDate));
-          let dayClass = "btn-light";
+          let dayClass = "bg-1 text-light";
           if (selected) {
-            dayClass = "btn-primary";
+            dayClass = "bg-3";
           } else if (isToday(day)) {
-            dayClass = "btn-outline-primary";
+            dayClass = "btn-outline-light color-3";
           }
 
           return (
             <button
               key={day.toISOString()}
               type="button"
-              className={`btn btn-sm p-0 ${dayClass} ${styles.datePickerDay}`}
+              className={`btn btn-sm p-0 ${dayClass} ${styles.datePickerDay} ${
+                selected ? styles.pickerButtonSelected : styles.pickerButton
+              }`}
               onClick={() => onSelect(day)}
               disabled={outOfRange}
               aria-pressed={selected}
@@ -165,6 +167,7 @@ export function DatePicker({
     <div ref={rootRef} className="position-relative d-inline-block">
       <div className="input-group">
         <input
+          className="form-control bg-1 text-light"
           value={value ? format(value, "MMM d, yyyy") : ""}
           placeholder={placeholder}
           readOnly
@@ -181,7 +184,7 @@ export function DatePicker({
         />
         <button
           type="button"
-          className="btn btn-outline-secondary"
+          className={`btn btn-outline-light ${styles.pickerButton}`}
           onClick={toggle}
           disabled={disabled}
           aria-label="Toggle calendar"
@@ -200,7 +203,7 @@ export function DatePicker({
 
       {open && (
         <div
-          className={`dropdown-menu show p-2 shadow ${styles.datePickerPopup}`}
+          className={`dropdown-menu show p-2 shadow bg-1 text-light border border-light ${styles.datePickerPopup}`}
           role="dialog"
           aria-label="Calendar"
         >

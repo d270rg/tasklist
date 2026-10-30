@@ -80,7 +80,7 @@ export default function Viewport({
       </Suspense>
 
       <div hidden={!modalState.modalOpened} className="modal-container">
-        <div className="modal-body bg-dark text-light p-3 rounded border border-light">
+        <div className="modal-body bg-1 text-light p-3 rounded">
           <EditModal
             initialData={modalState.modalData}
             onSave={(task) => {
